@@ -8,6 +8,7 @@
 #  updated_at      :datetime         not null
 #  sip_endpoint_id :string
 #  password        :string
+#  app_id          :integer
 #
 
 class CompanyNumber < ActiveRecord::Base

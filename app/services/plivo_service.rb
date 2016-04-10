@@ -7,17 +7,18 @@ class PlivoService
     @plivo = RestAPI.new(@AUTH_ID, @AUTH_TOKEN)
   end
 
-  def create_sip_endpoint(name, password)
+  def create_sip_endpoint(name, password, app_id)
     params = {
       'username' => name,
       'password' => password,
-      'alias' => name
+      'alias' => name,
+      'app_id': app_id
     }
     begin
       response = @plivo.create_endpoint(params)
       return  {
                 sip_endpoint_id: response[1]['endpoint_id'],
-                sip_endpoint: response[1]['username'] + '@phone.plivo.com',
+                sip_endpoint: response[1]['sip_uri'],
                 password: password
               }
     rescue Exception => e
@@ -72,7 +73,7 @@ class PlivoService
 
   def destroy_application *ids
     ids.each do |app_id|
-      response = @plivo.delete_application({app_id: app_id})
+      response = @plivo.delete_application({'app_id' => app_id})
       if response.status != 204
         Rails.logger.debug response["errors"]
         raise
@@ -82,7 +83,7 @@ class PlivoService
 
   def destroy_endpoints *ids
     ids.each do |endpoint_id|
-      response = @plivo.delete_endpoint({endpoint_id: endpoint_id})
+      response = @plivo.delete_endpoint({'endpoint_id'=> endpoint_id})
       if response.status != 204
         Rails.logger.debug response["errors"]
         raise
