@@ -11,6 +11,10 @@ class InboundingCallsController < ApplicationController
                         status: params[:CallStatus],
                         company_number: @company_number
                       )
+    if @call.errors
+      Rails.logger.debug @call.errors
+      raise
+    end
     render xml: PlivoService.forward(params, @company_number.app.id)
   end
 

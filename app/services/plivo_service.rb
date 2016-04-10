@@ -29,9 +29,11 @@ class PlivoService
 
   def create_application(app_url, app_name)
     params = {
-      'answer_url' => "#{app_url}/forward",
+      'answer_url' => "#{app_url}/inbounding_calls/forward.xml",
       'answer_method' => 'POST',
-      'hangup_url' => "#{app_url}/hangup",
+      'fallback_url' => "#{app_url}/inbounding_calls/fallback.xml",
+      'fallback_method' => 'POST',
+      'hangup_url' => "#{app_url}/nbounding_calls/hangup.xml",
       'hangup_method' => 'POST',
       'app_name' => app_name,
       'default_endpoint_app' => true
@@ -60,7 +62,7 @@ class PlivoService
     response.addSpeak("You're at #{app.name}, leave a message!")
 
     record_params = {
-      action: "http://#{app.app_url}/inbounding_calls/voicemail",
+      action: "http://#{app.app_url}/inbounding_calls/voicemail.xml",
       method: 'POST',
       maxLength: '60',
       redirect: 'true'
