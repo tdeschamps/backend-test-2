@@ -11,4 +11,6 @@
 #
 
 class App < ActiveRecord::Base
+  has_many :company_numbers
+  has_many :user_numbers
 end

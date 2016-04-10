@@ -11,15 +11,16 @@ apps = %w(phone desktop tablet)
 
 plivo_service = PlivoService.new
 
+aviato = App.create(plivo_service.create_application("localhost:3000", "Aviato").merge!({name: "Aviato"}))
+
 users.each do |name|
   user = User.create(name: name)
   user.user_numbers << apps.map do |app|
     UserNumber.create(plivo_service.create_sip_endpoint(app, FFaker::Internet.password))
   end
+  aviato.user_numbers << user.user_numbers
 end
 
 lines.each do |line|
-  CompanyNumber.create(plivo_service.create_sip_endpoint(line, FFaker::Internet.password))
+  aviato.user_numbers << CompanyNumber.create(plivo_service.create_sip_endpoint(line, FFaker::Internet.password))
 end
-
-aviato = App.create(plivo_service.create_application("localhost:3000", "Aviato").merge!({name: "Aviato"}))
