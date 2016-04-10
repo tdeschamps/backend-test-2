@@ -1,9 +1,9 @@
 class InboundingCallsController < ApplicationController
   skip_before_filter :verify_authenticity_token
-  before_action :set_company_number, only: :inbound
+  before_action :set_company_number, only: :forward
   before_action :set_call, only: [:voicemail, :hangup, :fallback]
 
-  def inbound
+  def forward
     @call = Call.create(
                         uuid: params[:CallUUID],
                         caller_id: params[:From],
@@ -11,8 +11,8 @@ class InboundingCallsController < ApplicationController
                         status: params[:CallStatus],
                         company_number: @company_number
                       )
-    if @call.errors
-      Rails.logger.debug @call.errors
+    if @call.errors.messages != {}
+      Rails.logger.debug @call.errors.inspect
       raise
     end
     render xml: PlivoService.forward(params, @company_number.app.id)
@@ -21,7 +21,7 @@ class InboundingCallsController < ApplicationController
   def voicemail
     @voicemail = VoiceMail.create(url: params[:RecordFile], duration: params[:RecordingDuration], call: @call)
 
-    if @voice_mail.errors
+    if @voicemail.errors.messages != {}
       Rails.logger.debug @voice_mail.errors
       raise
     end
@@ -37,12 +37,6 @@ class InboundingCallsController < ApplicationController
     @call.answer_time = params[:AnswerTime]
     @call.duration = params[:Duration]
     @call.save
-
-    if @call.errors
-      Rails.logger.debug @call.errors
-      raise
-    end
-
     render nothing: true
   end
 
@@ -50,7 +44,7 @@ class InboundingCallsController < ApplicationController
     @call.status = "error"
     @call.save
 
-    if @call.errors
+    if @call.errors.messages != {}
       Rails.logger.debug @call.errors
       raise
     end

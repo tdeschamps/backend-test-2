@@ -18,7 +18,7 @@ class PlivoService
       response = @plivo.create_endpoint(params)
       return  {
                 sip_endpoint_id: response[1]['endpoint_id'],
-                sip_endpoint: response[1]['sip_uri'],
+                sip_endpoint: "sip:#{response[1]['username']}@phone.plivo.com" ,
                 password: password
               }
     rescue Exception => e
@@ -29,11 +29,11 @@ class PlivoService
 
   def create_application(app_url, app_name)
     params = {
-      'answer_url' => "#{app_url}/inbounding_calls/forward.xml",
+      'answer_url' => "#{app_url}/inbounding_calls/forward",
       'answer_method' => 'POST',
-      'fallback_url' => "#{app_url}/inbounding_calls/fallback.xml",
+      'fallback_answer_url' => "#{app_url}/inbounding_calls/fallback",
       'fallback_method' => 'POST',
-      'hangup_url' => "#{app_url}/nbounding_calls/hangup.xml",
+      'hangup_url' => "#{app_url}/inbounding_calls/hangup",
       'hangup_method' => 'POST',
       'app_name' => app_name,
       'default_endpoint_app' => true
@@ -54,7 +54,7 @@ class PlivoService
       callerName: params[:CallerName],
       timeout: '15'
     }
-    dial = response.addDial(dial_parameters)
+    dial = response.addDial(dial_params)
     app.user_numbers.each do |user_number|
       dial.addUser user_number.sip_endpoint
     end
@@ -62,7 +62,7 @@ class PlivoService
     response.addSpeak("You're at #{app.name}, leave a message!")
 
     record_params = {
-      action: "http://#{app.app_url}/inbounding_calls/voicemail.xml",
+      action: "#{app.app_url}/inbounding_calls/voicemail.xml",
       method: 'POST',
       maxLength: '60',
       redirect: 'true'

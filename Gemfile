@@ -54,3 +54,7 @@ group :development do
   gem 'better_errors'
   gem 'figaro'
 end
+
+group :production do
+  gem 'puma'
+end
