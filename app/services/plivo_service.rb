@@ -2,8 +2,8 @@ class PlivoService
   include Plivo
 
   def initialize
-    @AUTH_ID = ENV.fetch 'plivo_id'
-    @AUTH_TOKEN = ENV.fetch 'plivo_auth_token'
+    @AUTH_ID = ENV.fetch 'PLIVO_ID'
+    @AUTH_TOKEN = ENV.fetch 'PLIVO_AUTH_TOKEN'
     @plivo = RestAPI.new(@AUTH_ID, @AUTH_TOKEN)
   end
 

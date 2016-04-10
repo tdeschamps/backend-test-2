@@ -11,7 +11,7 @@ apps = %w(phone desktop tablet)
 
 plivo_service = PlivoService.new
 
-aviato = App.create(plivo_service.create_application(ENV.fetch('app_url'), "Aviato").merge!({name: "Aviato"}))
+aviato = App.create(plivo_service.create_application(ENV.fetch('APP_URL'), "Aviato").merge!({name: "Aviato"}))
 
 users.each do |name|
   user = User.create(name: name)
