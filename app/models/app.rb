@@ -11,6 +11,9 @@
 #
 
 class App < ActiveRecord::Base
+  has_many :users
+  has_many :user_numbers, through: :users
   has_many :company_numbers
-  has_many :user_numbers
+  has_many :calls, through: :company_numbers
+
 end

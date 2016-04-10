@@ -12,6 +12,6 @@
 
 class CompanyNumber < ActiveRecord::Base
   validates :sip_endpoint, uniqueness: true
-  has_many :user_numbers
+  belongs_to :app
   has_many :calls
 end

@@ -26,12 +26,12 @@ class PlivoService
     end
   end
 
-  def create_application app_url, app_name
+  def create_application(app_url, app_name)
     params = {
       'answer_url' => "#{app_url}/forward",
-      'answer_method' => 'GET',
+      'answer_method' => 'POST',
       'hangup_url' => "#{app_url}/hangup",
-      'hangup_method' => 'GET',
+      'hangup_method' => 'POST',
       'app_name' => app_name,
       'default_endpoint_app' => true
     }
@@ -40,6 +40,34 @@ class PlivoService
       app_id: response[1]['app_id'],
       api_id: response[1]['api_id']
     }
+  end
+
+  def self.forward(params, app_id)
+    app = App.find(app_id)
+    response = Response.new
+
+    dial_params = {
+      callerId: params[:From],
+      callerName: params[:CallerName],
+      timeout: '15'
+    }
+    dial = response.addDial(dial_parameters)
+    app.user_numbers.each do |user_number|
+      dial.addUser user_number.sip_endpoint
+    end
+
+    response.addSpeak("You're at #{app.name}, leave a message!")
+
+    record_params = {
+      action: "http://#{app.app_url}/inbounding_calls/voicemail",
+      method: 'POST',
+      maxLength: '60',
+      redirect: 'true'
+    }
+
+    response.addRecord(record_params)
+
+    response.to_xml
   end
 
   def destroy_application *ids
@@ -54,7 +82,7 @@ class PlivoService
 
   def destroy_endpoints *ids
     ids.each do |endpoint_id|
-      response = @plivo.delete_endpoint({endpoint_id: app_id})
+      response = @plivo.delete_endpoint({endpoint_id: endpoint_id})
       if response.status != 204
         Rails.logger.debug response["errors"]
         raise
