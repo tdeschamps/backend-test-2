@@ -22,7 +22,7 @@ class CallsController < ApplicationController
   before_action :set_call, only: :show
 
   def index
-    @calls = @app.calls.order_by(:id)
+    @calls = @app.calls.order(:id)
   end
 
   def show
