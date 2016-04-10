@@ -36,7 +36,10 @@ class PlivoService
       'default_endpoint_app' => true
     }
     response = @plivo.create_application(params)
-    response[1]['app_id']
+    {
+      app_id: response[1]['app_id'],
+      api_id: response[1]['api_id']
+    }
   end
 
   def destroy_application *ids
@@ -51,7 +54,7 @@ class PlivoService
 
   def destroy_endpoints *ids
     ids.each do |endpoint_id|
-      response = @plivo.delete_application({endpoint_id: app_id})
+      response = @plivo.delete_endpoint({endpoint_id: app_id})
       if response.status != 204
         Rails.logger.debug response["errors"]
         raise

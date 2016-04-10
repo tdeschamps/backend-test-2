@@ -11,19 +11,31 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150922194944) do
+ActiveRecord::Schema.define(version: 20160410155327) do
+
+  create_table "apps", force: :cascade do |t|
+    t.string   "name"
+    t.string   "app_id"
+    t.string   "api_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "company_numbers", force: :cascade do |t|
     t.string   "sip_endpoint"
-    t.datetime "created_at",   null: false
-    t.datetime "updated_at",   null: false
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
+    t.string   "sip_endpoint_id"
+    t.string   "password"
   end
 
   create_table "user_numbers", force: :cascade do |t|
     t.integer  "user_id"
     t.string   "sip_endpoint"
-    t.datetime "created_at",   null: false
-    t.datetime "updated_at",   null: false
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
+    t.string   "sip_endpoint_id"
+    t.string   "password"
   end
 
   add_index "user_numbers", ["user_id"], name: "index_user_numbers_on_user_id"
