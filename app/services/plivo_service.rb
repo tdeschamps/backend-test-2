@@ -56,7 +56,7 @@ class PlivoService
     }
     dial = response.addDial(dial_params)
     app.user_numbers.each do |user_number|
-      dial.addUser user_number.sip_endpoint
+      dial.addUser(user_number.sip_endpoint)
     end
 
     response.addSpeak("You're at #{app.name}, leave a message!")
