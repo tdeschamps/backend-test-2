@@ -1,5 +1,6 @@
 <div class = "container">
-  <div class = "col-x-12 col-sm-8 sol-sm-offset-2">
+  <div class = "col-x-12 col-sm-10 sol-sm-offset-1">
+    <h1 class="text-center"> <%= @app.name.capitalize %></h1>
     <table class="table">
       <thead>
         <tr>
@@ -7,20 +8,21 @@
            <th>Caller</th>
            <th>From Id</th>
            <th>Start Date</th>
-           <th>Duration </th>
+           <th>Duration (s)</th>
            <th> Voicemail? </th>
         </tr>
       </thead>
       <tbody>
         <% @calls.each do |call| %>
           <tr>
-            <% %w(uuid caller_name caller_id start_time end_time duration).each do |prop| %>
+            <th> <%= link_to call.uuid, call_path(call) %></th>
+            <% %w(caller_name caller_id start_time end_time duration).each do |prop| %>
               <th> <%= call.send(prop) %> </th>
             <% end %>
             <% if call.voice_mail %>
-              <th> call.voice_mail.url </th>
+              <th> <%= call.voice_mail.url %></th>
             <% else %>
-              <th> False</th>
+              <th>False</th>
             <% end %>
           </tr>
           <% end %>

@@ -1,6 +1,6 @@
 Rails.application.routes.draw do
-
-  resources :apps, only: [] do
+  root to: 'apps#index'
+  resources :apps, only: :index do
     resources :calls, only: :index
   end
 

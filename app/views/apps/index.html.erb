@@ -1,0 +1,32 @@
+<div class = "container">
+  <h1 class="text-center">Apps</h1>
+  <% @apps.each do |app| %>
+    <%= link_to app_calls_path(app) do %>
+      <h2><%= app.name %></h2>
+    <% end %>
+    <table class="table">
+      <thead>
+        <tr>
+           <th>Sip endpoint id</th>
+           <th>Sip Endpoint </th>
+        </tr>
+      </thead>
+      <tbody>
+        <% app.company_numbers.each do |number| %>
+          <tr>
+            <% %w(sip_endpoint_id sip_endpoint).each do |prop| %>
+              <th> <%= number.send(prop) %> </th>
+            <% end %>
+          </tr>
+        <% end %>
+        <% app.user_numbers.each do |number| %>
+          <tr>
+            <% %w(sip_endpoint_id sip_endpoint).each do |prop| %>
+              <th> <%= number.send(prop) %> </th>
+            <% end %>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% end %>
+</div>

@@ -10,5 +10,6 @@
 #
 
 class User < ActiveRecord::Base
+  validates :app_id, presence: true
   has_many :user_numbers
 end

@@ -1,0 +1,23 @@
+<div class = "container">
+  <div class = "col-x-12 col-sm-12">
+    <h1 class="text-center"> <%= @call.uuid %></h1>
+    <table class="table">
+      <thead>
+        <tr>
+          <% @call.attributes.keys.each do |key| %>
+           <th> <%= key %></th>
+          <% end %>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <% @call.attributes.keys.each do |key| %>
+            <th> <%= @call.send(key) %></th>
+          <% end %>
+        </tr>
+      </tbody>
+    </table>
+
+  </div>
+
+</div>

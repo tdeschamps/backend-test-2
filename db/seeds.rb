@@ -11,10 +11,10 @@ apps = %w(phone desktop tablet)
 
 plivo_service = PlivoService.new
 
-aviato = App.create(plivo_service.create_application(ENV.fetch('APP_URL'), "Aviato").merge!({name: "Aviato", app_url: ENV.fetch('APP_URL')}))
+aviato = App.create(plivo_service.create_application(ENV.fetch('APP_URL'), FFaker::Company.name,).merge!({name: "Aviato", app_url: ENV.fetch('APP_URL')}))
 
 users.each do |name|
-  user = User.create(name: name)
+  user = User.create(name: name, app_id: aviato.id)
   user.user_numbers << apps.map do |app|
     UserNumber.create(plivo_service.create_sip_endpoint("#{user.name}#{app.capitalize}", FFaker::Internet.password, aviato.app_id))
   end
