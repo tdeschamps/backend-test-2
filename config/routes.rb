@@ -11,6 +11,7 @@ Rails.application.routes.draw do
       post 'hangup'
       post 'fallback'
       post 'voicemail'
+      post 'save_record'
     end
   end
 end

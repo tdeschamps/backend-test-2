@@ -45,6 +45,17 @@ class PlivoService
     }
   end
 
+  def find_responder call_uuid
+    response = @plivo.get_cdrs(parent_call_uuid: call_uuid)
+
+    if response[1]["objects"] != []
+      responder_sip = response[1]["objects"][0]["to_number"]
+    else
+      nil
+    end
+
+  end
+
   def self.forward(params, app_id)
     app = App.find(app_id)
     response = Response.new
@@ -52,24 +63,40 @@ class PlivoService
     dial_params = {
       callerId: params[:From],
       callerName: params[:CallerName],
-      timeout: '15'
+      timeout: '15',
+      action: "#{app.app_url}/inbounding_calls/voicemail.xml",
+      method: 'POST'
     }
+    response.addSpeak("You're at #{app.name}, we're looking for someone for you")
     dial = response.addDial(dial_params)
     app.user_numbers.each do |user_number|
       dial.addUser(user_number.sip_endpoint)
     end
+    response.to_xml
+  end
 
-    response.addSpeak("You're at #{app.name}, leave a message!")
+  def self.set_up_voicemail(app_id)
+    app = App.find(app_id)
+    response = Response.new
+
+    response.addSpeak("Thanks for reaching us leave a message")
 
     record_params = {
-      action: "#{app.app_url}/inbounding_calls/voicemail.xml",
+      action: "#{app.app_url}/inbounding_calls/save_record.xml",
       method: 'POST',
       maxLength: '60',
+      finishOnKey: '#',
+      playBeep: 'true',
       redirect: 'true'
     }
-
     response.addRecord(record_params)
+    response.addHangup()
+    response.to_xml
+  end
 
+  def self.hangup
+    response = Response.new
+    response.addHangup()
     response.to_xml
   end
 

@@ -1,7 +1,7 @@
 class InboundingCallsController < ApplicationController
   skip_before_filter :verify_authenticity_token
-  before_action :set_company_number, only: :forward
-  before_action :set_call, only: [:voicemail, :hangup, :fallback]
+  before_action :set_company_number, only: [:forward, :voicemail]
+  before_action :set_call, only: [:voicemail, :hangup, :fallback, :save_record]
 
   def forward
     @call = Call.create(
@@ -11,22 +11,20 @@ class InboundingCallsController < ApplicationController
                         status: params[:CallStatus],
                         company_number: @company_number
                       )
-    if @call.errors.messages != {}
-      Rails.logger.debug @call.errors.inspect
-      raise
-    end
     render xml: PlivoService.forward(params, @company_number.app.id)
   end
 
   def voicemail
-    @voicemail = VoiceMail.create(url: params[:RecordFile], duration: params[:RecordingDuration], call: @call)
-
-    if @voicemail.errors.messages != {}
-      Rails.logger.debug @voice_mail.errors
-      raise
+    if params['CallStatus'] != 'completed'
+      render xml: PlivoService.set_up_voicemail(@company_number.app.id)
+    else
+      render xml: PlivoService.hangup
     end
+  end
 
-    render nothing: true
+  def save_record
+    @voicemail = VoiceMail.create(url: params[:RecordFile], duration: params[:RecordingDuration], call_id: @call.id)
+    render xml: PlivoService.hangup
   end
 
   def hangup
@@ -36,6 +34,12 @@ class InboundingCallsController < ApplicationController
     @call.end_time = params[:EndTime]
     @call.answer_time = params[:AnswerTime]
     @call.duration = params[:Duration]
+
+    plivo = PlivoService.new
+    if responder_sip = plivo.find_responder(@call.uuid)
+      responder = UserNumber.find_by_sip_endpoint responder_sip
+      @call.user_number_id = responder.id
+    end
     @call.save
     render nothing: true
   end
@@ -43,12 +47,6 @@ class InboundingCallsController < ApplicationController
   def fallback
     @call.status = "error"
     @call.save
-
-    if @call.errors.messages != {}
-      Rails.logger.debug @call.errors
-      raise
-    end
-
     render nothing: true
   end
 
